@@ -1,0 +1,19 @@
+{
+  "name": "RNSweetAlert",
+  "version": "3.1.0",
+  "summary": "SweetAlert native library for React Native.",
+  "homepage": "https://github.com/Clip-sub/react-native-sweet-alert.git",
+  "license": "MIT",
+  "authors": {
+    "Doko-Demo-Doa": "https://github.com/acaziasoftcom/react-native-sweet-alert"
+  },
+  "source": {
+    "git": "https://github.com/acaziasoftcom/react-native-sweet-alert.git",
+    "tag": "3.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "*.swift",
+  "requires_arc": "true"
+}
