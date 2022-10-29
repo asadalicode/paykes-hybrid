@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Base64 } from "js-base64";
 import React, { useState } from "react";
 import {  Modal, StyleSheet, Pressable, View } from "react-native";
 import CustomButton from "../shared/components/customButton";
@@ -15,10 +16,13 @@ const PaymentConfirmModal = ({ isShowPaymentConfirmModal, hideModal, navigation,
     const handleFogotPassword = () => {
         navigation.push('forgotPassword');
     };
+    const encryptPassword = (password) => {
+        return Base64.encode(password);
+      }
     const handleConfirmPayment =async()=>{
         let _userData = await AsyncStorage.getItem('userData');
         _userData = JSON.parse(_userData);
-        if(_userData.password !== password){
+        if(_userData.password !== encryptPassword(password)){
             showToastMessage(
                 'error',
                 'top',

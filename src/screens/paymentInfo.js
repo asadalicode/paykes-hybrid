@@ -96,21 +96,28 @@ const PaymentInfo = ({ navigation }) => {
     }
   };
   const onCardEntryComplete = cardDetails => {
-    // handleCreateCard(cardDetails);
-    setCardDetail({ ...cardDetails });
-    setIsShowAddress(true);
+    // handleCreateCard({cardDetails});
+    // setCardDetail({ ...cardDetails });
+    // setIsShowAddress(true);
+    handleCreateCard(cardDetails.nonce);
   };
-  const handleCreateCard = async (paymentAddress) => {
+  const handleCreateCard = async (nonce) => {
     let _userData = await AsyncStorage.getItem('userData');
     setIsAddLoading(true);
     _userData = JSON.parse(_userData);
     let _data = {
       idempotencyKey: uuid.v4(),
-      sourceId: cardDetail.nonce,
+      sourceId: nonce,
       referenceId: uuid.v4(),
       userId: _userData.id,
       cardHolderName: _userData.fullName,
-      address: paymentAddress,
+      address: {
+        addressLine1: 'us',
+        city: 'us',
+        state: 'us',
+        postalCode: '12123',
+        countryCode:'US'
+    }
     };
     let _response = await createCardAPICall(_data, _userData.customerId);
     setIsAddLoading(false);
@@ -124,7 +131,7 @@ const PaymentInfo = ({ navigation }) => {
     // Handle the cancel callback
   };
   const handleOpenPaymentDetail = () => {
-    setIsShowAddress(true);
+    // setIsShowAddress(true);
   }
 
   const handleAddress = (address) => {

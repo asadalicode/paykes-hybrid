@@ -19,6 +19,7 @@ import { showToastMessage } from '../shared/js/showToastMessage';
 import Popup from '../shared/components/popup';
 import OTP from '../components/otp/otp';
 import GlobalStyles from '../shared/styles/globalStyles';
+import { Base64 } from 'js-base64';
 
 const Login = ({ navigation }) => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
@@ -99,7 +100,7 @@ const Login = ({ navigation }) => {
     firestore()
       .collection('Users')
       .where('phoneWithCountryCode', '==', emailOrPhone)
-      .where('password', '==', password)
+      .where('password', '==',  encryptPassword(password))
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
@@ -134,7 +135,7 @@ const Login = ({ navigation }) => {
     firestore()
       .collection('Users')
       .where('phoneNumber', '==', emailOrPhone)
-      .where('password', '==', password)
+      .where('password', '==',  encryptPassword(password))
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
@@ -185,15 +186,19 @@ const Login = ({ navigation }) => {
         // ..
       });
   };
+  const encryptPassword = (password) => {
+    return Base64.encode(password);
+  }
   const loginThroughEmail = async () => {
     setIsMobileLogin(false);
     firestore()
       .collection('Users')
       .where('email', '==', emailOrPhone)
-      .where('password', '==', password)
+      .where('password', '==', encryptPassword(password))
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
+          console.log("data",response._docs[0]);
           let _userData = response._docs[0]._data;
           await AsyncStorage.setItem('userData', JSON.stringify(_userData));
           // await firebaseSignin(_userData.email, _userData.password);ssss

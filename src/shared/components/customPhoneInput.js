@@ -87,6 +87,7 @@ const CustomPhoneInput = ({
 
     if (isEdit && countryCode) {
       let _countryItem = items.find(item => item.value === countryCode);
+      console.log(_countryItem);
       setDropdownValue(_countryItem?.value);
       setDropdownFlag(_countryItem?.icon);
     }
@@ -110,12 +111,14 @@ const CustomPhoneInput = ({
     <>
       <View style={[GlobalStyles.mt3, styles.container]}>
         <Pressable onPress={() => !isEdit && refRBSheet.current.open()}>
-          <View style={[styles.flagLeftPortion]}>
-            <Image source={dropdownFlag} style={{ height: 25, width: 25 }} />
-            <CustomText style={[{ marginLeft: 15, marginRight: 15 }]}>
-              {dropdownValue}
-            </CustomText>
-          </View>
+         
+            <View style={[styles.flagLeftPortion]}>
+              <Image source={dropdownFlag} style={{ height: 25, width: 25 }} />
+              <CustomText style={[{ marginLeft: 15, marginRight: 15 }]}>
+                {dropdownValue}
+              </CustomText>
+            </View>
+          
         </Pressable>
         <View
           style={[

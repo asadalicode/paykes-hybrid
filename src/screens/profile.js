@@ -1,4 +1,4 @@
-import {Image, StyleSheet, View} from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Header from '../shared/components/header';
 import RedirectTab from '../shared/components/redirectTab';
@@ -6,9 +6,9 @@ import CustomText from '../shared/components/customText';
 import CustomButton from '../shared/components/customButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Profile = ({navigation}) => {
+const Profile = ({ navigation }) => {
   const handlePersonalInformation = () => {
-    navigation.navigate('signup', {
+    navigation.navigate('personalInformation', {
       isEdit: true,
     });
   };
@@ -26,7 +26,7 @@ const Profile = ({navigation}) => {
         onPress={() => navigation.navigate('dashboard')}
       />
       <View style={styles.container}>
-        <View style={{display: 'flex', flex: 1}}>
+        <View style={{ display: 'flex', flex: 1 }}>
           <RedirectTab
             text={'Invite Friends'}
             onPress={() => navigation.navigate('inviteFriend')}
@@ -99,7 +99,7 @@ const Profile = ({navigation}) => {
           <RedirectTab
             rippleColor={'transparent'}
             text={'Enable SMS Login'}
-            onPress={() => {}}
+            onPress={() => { }}
             LeftIcon={() => (
               <Image
                 source={require('../assets/images/sms.png')}
@@ -109,6 +109,23 @@ const Profile = ({navigation}) => {
             isToggleRight={true}
             style={[styles.tab]}
           />
+           {/* <RedirectTab
+            text={'Help'}
+            onPress={() => navigation.navigate('help')}
+            LeftIcon={() => (
+              <Image
+                source={require('../assets/images/help.png')}
+                style={styles.iconSize}
+              />
+            )}
+            RightIcon={() => (
+              <Image
+                source={require('../assets/images/rightAngle.png')}
+                style={styles.iconSize}
+              />
+            )}
+            style={[styles.tab]}
+          /> */}
         </View>
         <CustomButton Title={'Logout'} onPress={handleLogout} />
       </View>

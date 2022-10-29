@@ -20,6 +20,7 @@ import {
   getTansectionAPICall,
   registerCardAPICall,
   getCardDetailsAPICall,
+  getCustomerProfileAPICall,
 } from '../shared/services/payment';
 import { showToastMessage } from '../shared/js/showToastMessage';
 import BottomSheet from '../shared/components/bottomSheet';
@@ -55,6 +56,7 @@ const Dashboard = ({ navigation, route }) => {
   const [isShowExceededPerTransaction, setIsShowExceededPerTransaction] = useState(false);
   const [isShowPaymentConfirmModal, setIsShowPaymentConfirmModal] = useState(false)
   const refRBSheet = useRef();
+  const [addressAdded, setAddressAdded] = useState(false)
 
   useEffect(() => {
     getRecipients();
@@ -62,12 +64,25 @@ const Dashboard = ({ navigation, route }) => {
     getRegisterCard();
     getTransection();
     getCardDetails();
+    getCustomerProfile();
   }, []);
   useEffect(() => {
     if (recipient) {
       handleRecipient(recipient);
     }
   }, [recipient]);
+
+  const getCustomerProfile = async () => {
+    let _userData = await AsyncStorage.getItem('userData');
+    _userData = JSON.parse(_userData);
+    let _response = await getCustomerProfileAPICall(_userData.email);
+    console.log("profile", _response);
+    if (_response?.data?.address?.addressLine1) {
+      setAddressAdded(true);
+    } else {
+      setAddressAdded(false);
+    }
+  }
 
   const getCardDetails = async () => {
     let _userData = await AsyncStorage.getItem('userData');
@@ -84,8 +99,8 @@ const Dashboard = ({ navigation, route }) => {
     setTrasectionListLoading(true);
     let _userData = await AsyncStorage.getItem('userData');
     _userData = JSON.parse(_userData);
+    console.log("transaction here", _userData.id);
     let _response = await getTansectionAPICall(_userData.id);
-    console.log("transaction here", _response);
     setTrasectionListLoading(false);
     if (_response.isSuccess) {
       let _data = _response.result;
@@ -138,13 +153,7 @@ const Dashboard = ({ navigation, route }) => {
 
   const sendPayment = () => {
     if (!isCredetCard) {
-      showToastMessage(
-        'error',
-        'top',
-        `Please add payment card first`,
-        3000,
-        60,
-      );
+      navigation.navigate("paymentInfo")
       return;
     }
     if (amount <= 0) {
@@ -155,7 +164,14 @@ const Dashboard = ({ navigation, route }) => {
       showToastMessage('error', 'top', `Please select a recipient`, 3000, 60);
       return;
     }
-    // handlePaymentSend();
+    if (!addressAdded) {
+      showToastMessage('error', 'top', `Please add address details`, 3000, 60);
+      navigation.navigate("personalInformation", {
+        isEdit: true,
+      });
+      return;
+    }
+    handlePaymentSend();
     refRBSheet.current.open();
   };
 
@@ -170,7 +186,7 @@ const Dashboard = ({ navigation, route }) => {
       phoneNumber: _phoneNumber
     };
     let _response = await mPaisaAPICall(_data);
-    setIsLoading(false);
+   setIsLoading(false);
     if (_response.isSuccess) {
       setIsShowPaymentConfirmModal(false);
       closeBottomSheet();
@@ -271,7 +287,7 @@ const Dashboard = ({ navigation, route }) => {
   const currencyConverter = async usd => {
     setAmountLoader(true);
     let _result = await currencyConverterAPICall(usd);
-    console.log("result11",_result);
+    console.log("result11", _result);
     setAmountLoader(false);
     if (_result.isSuccess) {
       setKESAmount(_result.resultAmount - 0.99);
@@ -291,7 +307,12 @@ const Dashboard = ({ navigation, route }) => {
   }
   const handleSendValue = (value) => {
     value = value.replace(/[^0-9.]/g, "");
-    let _flag = value ? (value.match(/\./g) === null|| value.match(/\./g)?.length <=1) : false;
+    let _flag = value ? (value.match(/\./g) === null || value.match(/\./g)?.length <= 1) : false;
+    if (value === "") {
+      setAmount("");
+      setkesInputAmount("");
+      return;
+    }
     if (_flag) {
       setAmount(value);
       setkesInputAmount((value * parseFloat(KESAmount)).toFixed(2));
@@ -314,15 +335,20 @@ const Dashboard = ({ navigation, route }) => {
   }
   const handleRecieveAmount = (value) => {
     value = value.replace(/[^0-9.]/g, "");
-    let _flag = value ? (value.match(/\./g) === null|| value.match(/\./g)?.length <=1) : false;
-    if(_flag){
+    let _flag = value ? (value.match(/\./g) === null || value.match(/\./g)?.length <= 1) : false;
+    if (value === "") {
+      setAmount("");
+      setkesInputAmount("");
+      return;
+    }
+    if (_flag) {
       setkesInputAmount(value);
       if (parseFloat(value).toFixed(2) + totalTodayTransaction > 300000) {
         setIsShowExceededPerTransaction(true);
       }
       else {
         setIsShowExceededPerTransaction(false);
-  
+
       }
       if (value > 150000) {
         setIsShowKShExceededError(true);

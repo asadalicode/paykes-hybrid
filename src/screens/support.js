@@ -6,19 +6,19 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../shared/components/header';
 import CustomText from '../shared/components/customText';
 import SuppportCard from '../components/supportCard';
 import firestore from '@react-native-firebase/firestore';
 
-const Suppport = ({navigation}) => {
+const Suppport = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [support, setSupport] = useState([
-    {title: 'Call us 24/7', image: require('../assets/images/phone-call.png')},
-    {title: 'Text us', image: require('../assets/images/message.png')},
-    {title: 'View Privacy Policy', image: require('../assets/images/lock.png')},
-    {title: 'View Terms of Service', image: require('../assets/images/accept.png')},
+    { id: 2, title: 'Text us', image: require('../assets/images/message.png') },
+    { id: 3, title: 'Help', image: require('../assets/images/help.png') },
+    { id: 4, title: 'View Privacy Policy', image: require('../assets/images/lock.png') },
+    { id: 5, title: 'View Terms of Service', image: require('../assets/images/accept.png') },
   ]);
   const [faqs, setFaqs] = useState([]);
 
@@ -36,7 +36,7 @@ const Suppport = ({navigation}) => {
         let _faqs = response._docs;
         if (_faqs.length > 0) {
 
-          let _faqsData = _faqs.map(({_data}) => {
+          let _faqsData = _faqs.map(({ _data }) => {
             return _data;
           });
 
@@ -51,13 +51,41 @@ const Suppport = ({navigation}) => {
   const handleNavigation = () => {
     navigation.navigate('dashboard');
   };
+  const handleClick = (id) => {
+    if (id === 3) {
+      navigation.navigate("help");
+    }
+  }
   return (
     <View>
       <Header title={'Support'} hasBack onPress={handleNavigation} />
       <ScrollView>
-        <View style={{padding: 15,marginTop:10}}>
+        <View style={{ padding: 15, marginTop: 10 }}>
+          <View style={styles.card}>
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}>
+
+              <Image
+                source={require('../assets/images/phone-call.png')}
+                style={{ width: 15, height: 15 }}
+              />
+              <CustomText style={styles.text}>Call us 24/7</CustomText>
+            </View>
+            <View style={{ marginTop: 5, marginLeft: 20 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <CustomText>Jimmy - </CustomText>
+                <CustomText>9526870695</CustomText>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <CustomText>Felix - </CustomText>
+                <CustomText>2183988039</CustomText>
+              </View>
+            </View>
+          </View>
           {support.map(item => {
-            return <SuppportCard title={item.title} image={item.image} />;
+            return <SuppportCard item={item} handleClick={handleClick} />;
           })}
 
           <View style={styles.faqContainer}>
@@ -69,7 +97,7 @@ const Suppport = ({navigation}) => {
               />
               <Image
                 source={require('../assets/images/downArrow.png')}
-                style={{height: 20, width: 20, marginTop: 5}}
+                style={{ height: 20, width: 20, marginTop: 5 }}
               />
             </View>
           </View>
@@ -87,7 +115,7 @@ const Suppport = ({navigation}) => {
 };
 export default Suppport;
 
-const QuestionCard = ({faq, navigation}) => {
+const QuestionCard = ({ faq, navigation }) => {
   const handleCard = () => {
     navigation.navigate('faq', {
       question: faq.question,
@@ -130,5 +158,17 @@ const styles = StyleSheet.create({
   faqContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  card: {
+    padding: 10,
+    paddingVertical: 14,
+    backgroundColor: 'white',
+    marginBottom: 10,
+    borderRadius: 5,
+
+  },
+  text: {
+    fontWeight: 'bold',
+    marginLeft: 10
   },
 });

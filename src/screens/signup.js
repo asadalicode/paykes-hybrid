@@ -1,8 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CustomText from '../shared/components/customText';
 import Header from '../shared/components/header';
 import TextInputField from '../shared/components/textInputField';
 import CustomButton from '../shared/components/customButton';
+import { Base64 } from 'js-base64';
 import {
   Alert,
   Image,
@@ -13,18 +14,18 @@ import {
   View,
 } from 'react-native';
 import GlobalStyles from '../shared/styles/globalStyles';
-import {ScrollView} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import PhoneInput from 'react-native-phone-number-input';
 import CustomCheckBox from '../shared/components/checkBox';
 import DropDownPicker from 'react-native-dropdown-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import {showToastMessage} from '../shared/js/showToastMessage';
+import { showToastMessage } from '../shared/js/showToastMessage';
 import CustomPhoneInput from '../shared/components/customPhoneInput';
-import {Button} from 'react-native';
+import { Button } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import CustomCountry from '../shared/components/customCountry';
-import {TouchableRipple} from 'react-native-paper';
+import { TouchableRipple } from 'react-native-paper';
 import Popup from '../shared/components/popup';
 import OTP from '../components/otp/otp';
 import uuid from 'react-native-uuid';
@@ -34,11 +35,18 @@ import {
   paymentAPICall,
 } from '../shared/services/payment';
 
-const Signup = ({navigation, route}) => {
+const Signup = ({ navigation, route }) => {
   const [value, setValue] = useState('');
-  const {isEdit} = route.params || {};
+  const { isEdit } = route.params || {};
 
   const [isNameInvalid, setIsNameInvalid] = useState(false);
+  const [isFirstNameInvalid, setIsFirstNameInvalid] = useState(false);
+  const [isLastNameInvalid, setIsLastNameInvalid] = useState(false);
+  const [isGivenNameInvalid, setIsGivenNameInvalid] = useState(false);
+  const [givenName, setGivenName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+
   const [isEmailInvalid, setIsEmailInvalid] = useState(false);
   const [formatedPhoneNumber, setFormatedPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('');
@@ -91,6 +99,7 @@ const Signup = ({navigation, route}) => {
     let _userData = await AsyncStorage.getItem('userData');
     _userData = JSON.parse(_userData);
     setFullName(_userData.fullName);
+    setGivenName(_userData?.givenName ||'');
     setEmail(_userData.email);
     setPassword(_userData.password);
     setUserId(_userData.id);
@@ -127,6 +136,32 @@ const Signup = ({navigation, route}) => {
     setIsNameInvalid(_error);
     return !_error;
   };
+  const checkGivenNameValid = () => {
+    let _error = false;
+    if (!(givenName.trim().length > 0)) {
+      _error = true;
+    }
+    setIsGivenNameInvalid(_error);
+    return !_error;
+  };
+
+  const checkFirstNameValid = () => {
+    let _error = false;
+    if (!(firstName.trim().length > 0)) {
+      _error = true;
+    }
+    setIsFirstNameInvalid(_error);
+    return !_error;
+  };
+  const checkLastNameValid = () => {
+    let _error = false;
+    if (!(lastName.trim().length > 0)) {
+      _error = true;
+    }
+    setIsLastNameInvalid(_error);
+    return !_error;
+  };
+
   const checkPaswordValid = () => {
     let _error = false;
     if (!(password.trim().length > 0)) {
@@ -162,22 +197,28 @@ const Signup = ({navigation, route}) => {
       ? true
       : false;
   };
+  const encryptPassword = (password) => {
+    return Base64.encode(password);
+  }
 
   const addUser = () => {
     const checkValid = checkPhoneNumberValid();
     setPhoneNumberValid(checkValid);
     let _email = checkEmailValid();
-    let _name = checkNameValid();
     let _password = checkPaswordValid();
     let _checkTerms = !isEdit ? checkTermsAndservices() : true;
-    if (!(_email && _name && _password && checkValid && _checkTerms)) {
+    let _firstName = checkFirstNameValid();
+    let _lastName = checkLastNameValid();
+    if (!(_email && _password && checkValid && _checkTerms &&  _firstName && _lastName)) {
       return;
     }
     let _user = {
       id: isEdit ? userId : uuid.v4(),
-      fullName: fullName,
+      firstName: firstName,
+      familyName:lastName,
+      givenName:lastName,
       email: email,
-      password: password,
+      password: encryptPassword(password),
       phoneNumber: phoneNumber,
       moneyTransferPreference: dropdownValue,
       isGetMoreInformation: moreInformation,
@@ -192,6 +233,7 @@ const Signup = ({navigation, route}) => {
     }
   };
   const handleEditUserToFirebase = user => {
+
     let _docRef = firestore().collection('Users');
     _docRef
       .where('id', '==', user.id)
@@ -252,7 +294,7 @@ const Signup = ({navigation, route}) => {
       });
   };
 
-  const createCustomerProfile= async (user)=>{
+  const createCustomerProfile = async (user) => {
     let _data = {
       userId: user.id,
       givenName: user.fullName,
@@ -260,7 +302,8 @@ const Signup = ({navigation, route}) => {
       phoneNumber: user.phoneWithCountryCode,
       note: 'PayKES customer',
     };
-  await  createCustomerAPICall(_data);
+
+    await createCustomerAPICall(_data);
   }
   const addUserInFireStore = user => {
     firestore()
@@ -270,7 +313,7 @@ const Signup = ({navigation, route}) => {
       .then(response => {
         if (response._docs.length === 0) {
           sendOtp(user.phoneWithCountryCode);
-          setUserData({...user});
+          setUserData({ ...user });
 
           // handleAddUser(user);
           return;
@@ -296,35 +339,35 @@ const Signup = ({navigation, route}) => {
       .doc(user.id).set(user)
       .then(async response => {
         createUserInFirebaseAuthentication(user);
-       
+
       })
       .catch(error => {
         // showToastMessage('error', 'top', 'Server error!', 3000, 60);
         setIsButtonLoading(false);
       });
   };
-  const createUserInFirebaseAuthentication = async (user)=>{
+  const createUserInFirebaseAuthentication = async (user) => {
     auth()
-    .createUserWithEmailAndPassword(user.email, user.password)
-    .then(async (userCredential) => {
-      debugger;
-      await createCustomerProfile(user);
-      showToastMessage(
-        'success',
-        'top',
-        'Register user successfully.',
-        3000,
-        60,
-      );
-      setIsButtonLoading(false);
-      handleLogin();
-      // resetState();
-    })
-    .catch(error => {
-      debugger;
-      showToastMessage('error', 'top', error, 3000, 60);
-      // ..
-    });
+      .createUserWithEmailAndPassword(user.email, user.password)
+      .then(async (userCredential) => {
+        debugger;
+        await createCustomerProfile(user);
+        showToastMessage(
+          'success',
+          'top',
+          'Register user successfully.',
+          3000,
+          60,
+        );
+        setIsButtonLoading(false);
+        handleLogin();
+        // resetState();
+      })
+      .catch(error => {
+        debugger;
+        showToastMessage('error', 'top', error, 3000, 60);
+        // ..
+      });
   }
 
   const resetState = () => {
@@ -377,21 +420,48 @@ const Signup = ({navigation, route}) => {
         hasBack={true}
         onPress={handleBackNavigation}
       />
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'position' : ''}
           keyboardVerticalOffset={Platform.OS === 'ios' && 90}>
           <ScrollView keyboardShouldPersistTaps="handled">
             <View style={[styles.container]}>
               <View>
-                <TextInputField
+              <TextInputField
+                  IsError={isFirstNameInvalid}
+                  Label={'First name'}
+                  placeholder="First name"
+                  DefaultValue={firstName}
+                  Value={firstName}
+                  OnChangeText={value => setFirstName(value)}
+                />
+                 <TextInputField
+                  IsError={isLastNameInvalid}
+                  Label={'Last name'}
+                  placeholder="Last name"
+                  DefaultValue={lastName}
+                  Value={lastName}
+                  style={[GlobalStyles.mt2]}
+                  OnChangeText={value => setLastName(value)}
+                />
+                {/* <TextInputField
                   IsError={isNameInvalid}
                   Label={'Full name'}
                   placeholder="Full name"
                   DefaultValue={fullName}
                   Value={fullName}
+                  style={[GlobalStyles.mt2]}
                   OnChangeText={value => setFullName(value)}
                 />
+                <TextInputField
+                  IsError={isGivenNameInvalid}
+                  Label={'Given name'}
+                  placeholder="Given name"
+                  DefaultValue={givenName}
+                  Value={givenName}
+                  style={[GlobalStyles.mt2]}
+                  OnChangeText={value => setGivenName(value)}
+                /> */}
                 <TextInputField
                   IsError={isEmailInvalid}
                   Label={'Email address'}
@@ -427,14 +497,14 @@ const Signup = ({navigation, route}) => {
                   <View style={[styles.selectedCountry, GlobalStyles.mt3]}>
                     <Image
                       source={dropdwonFlag}
-                      style={{width: 25, height: 25}}
+                      style={{ width: 25, height: 25 }}
                     />
-                    <CustomText style={[{marginLeft: 10}]}>
+                    <CustomText style={[{ marginLeft: 10 }]}>
                       Sending to
                       {dropdownValue === ' Kenya' || dropdownValue === 'Kenya'
                         ? ` ${dropdownValue} First`
                         : ` ${dropdownValue}`}
-                      {}
+                      { }
                     </CustomText>
                   </View>
                 </TouchableRipple>
@@ -498,7 +568,7 @@ const Signup = ({navigation, route}) => {
                 <CustomButton
                   IsLoading={isButtonLoading}
                   Title={isEdit ? 'Save' : 'Sign up'}
-                  style={[{marginTop: isEdit ? 50 : 24}]}
+                  style={[{ marginTop: isEdit ? 50 : 24 }]}
                   onPress={addUser}
                 />
                 {!isEdit && (
@@ -548,7 +618,7 @@ const Signup = ({navigation, route}) => {
                 <Pressable onPress={closeBottomSheet}>
                   <Image
                     source={require('../assets/images/cross.png')}
-                    style={{width: 15, height: 15, marginRight: 10}}
+                    style={{ width: 15, height: 15, marginRight: 10 }}
                   />
                 </Pressable>
               </View>
@@ -569,8 +639,8 @@ const Signup = ({navigation, route}) => {
       {iShowOtpModal && (
         <Popup>
           <View
-            style={[{flexDirection: 'row', justifyContent: 'space-between'}]}>
-            <CustomText style={[{fontWeight: '600'}]}>Confirm OTP</CustomText>
+            style={[{ flexDirection: 'row', justifyContent: 'space-between' }]}>
+            <CustomText style={[{ fontWeight: '600' }]}>Confirm OTP</CustomText>
             <Pressable
               onPress={() => {
                 setIsShowOtpModal(false);
@@ -578,7 +648,7 @@ const Signup = ({navigation, route}) => {
               }}>
               <Image
                 source={require('../assets/images/cross.png')}
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
               />
             </Pressable>
           </View>

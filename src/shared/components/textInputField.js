@@ -22,6 +22,7 @@ const TextInputField = ({
   Value,
   onFocus,
   onBlur,
+  numberOfLines,
   textColor = "black",
   leftAffix
 
@@ -43,6 +44,7 @@ const TextInputField = ({
         placeholder={placeholder}
         secureTextEntry={SecureTextEntry}
         multiline={Multiline}
+        numberOfLines={numberOfLines}
         maxLength={MaxLength}
         minLength={MinLength}
         outlineColor={outlineColor}

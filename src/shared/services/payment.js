@@ -17,6 +17,30 @@ export const paymentAPICall = async data => {
 
   return _response;
 };
+
+export const updatePersonalInformationAPICall = async (data, customer_id) => {
+  console.log("data", data)
+  console.log("customer id", customer_id);
+  let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/customers/${customer_id}`;
+  let _response = {
+    isSuccess: false,
+  };
+
+  await backendCall(_url, 'PATCH', data, false, false).then(async response => {
+    if (!response.error) {
+      _response = {
+        isSuccess: true,
+      };
+    }
+    else {
+      showToastMessage('error', 'top', response.error.message[0]?.msg || response.error.message[0])
+    }
+  });
+
+  return _response;
+};
+
+
 export const getCardDetailsAPICall = async userId => {
   let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/users/${userId}`;
   let _response = {
@@ -38,18 +62,18 @@ export const getCardDetailsAPICall = async userId => {
 
 export const mPaisaAPICall = async data => {
   let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/m_payments/b2c`;
-  let _response={
+  let _response = {
     isSuccess: false
   };
 
-  await backendCall(_url, 'POST', {data}, false).then(async response => {
-    if(response?.data === null){
-      _response={
-        isSuccess : false
+  await backendCall(_url, 'POST', data, false).then(async response => {
+    if (response?.data === null) {
+      _response = {
+        isSuccess: false
       }
-    }else{
-      _response={
-        isSuccess : true
+    } else {
+      _response = {
+        isSuccess: true
       }
     }
   });
@@ -63,14 +87,14 @@ export const createCustomerAPICall = async data => {
     isSuccess: false,
   };
   await backendCall(_url, 'POST', data, false, false).then(async response => {
+
   });
 
   return _response;
 };
 
-export const getCustomerProfileAPICall = async phoneNumber => {
-  let _phoneNumber = phoneNumber;
-  let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/customers/filter?phoneNumber=${phoneNumber}`;
+export const getCustomerProfileAPICall = async email => {
+  let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/customers/filter?emailAddress=${email}`;
   let _response = {
     isSuccess: false,
     data: {},
@@ -149,13 +173,15 @@ export const createCardAPICall = async (data, customerId) => {
     isSuccess: false,
   };
 
-  await backendCall(_url, 'POST', data, false, false).then(async response => {
-    if (response.data) {
+  await backendCall(_url, 'POST', data, false).then(async response => {
+    console.log("response", response);
+    if (response.error === null) {
       _response = {
         isSuccess: true,
       };
-    } else {
-      showToastMessage('error', 'top', 'Server error', 3000, 60);
+    }
+    else {
+      showToastMessage('error', 'top', response.error.message[0]?.msg || response.error.message[0])
     }
   });
 
@@ -163,15 +189,21 @@ export const createCardAPICall = async (data, customerId) => {
 };
 
 export const deleteCardAPICall = async (data, customerId, cardId) => {
+  console.log("delete card", data, customerId, cardId);
   let _url = `https://us-central1-paykes.cloudfunctions.net/api_v1/customers/${customerId}/cards/${cardId}/disable`;
   let _response = {
     isSuccess: false,
   };
   await backendCall(_url, 'DELETE', data, false).then(async response => {
+    console.log("data", response);
     if (response.data) {
       _response = {
         isSuccess: true
       }
+    }
+    else {
+      showToastMessage('error', 'top', response.error.message[0]?.msg || response.error.message[0])
+
     }
   });
 

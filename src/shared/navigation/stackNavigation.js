@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, ActivityIndicator} from 'react-native';
-import {StyleSheet} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { View, ActivityIndicator } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Index from '../../screens/index/index';
 import Login from '../../screens/login';
 import Signup from '../../screens/signup';
@@ -16,6 +16,8 @@ import Faq from '../../screens/faq';
 import MyContacts from '../../screens/contacts';
 import PaymentInfo from '../../screens/paymentInfo';
 import TransectionList from '../../screens/transectionList';
+import PersonalInformation from '../../screens/personInformation';
+import Help from '../../screens/help';
 
 const Stack = createStackNavigator();
 const StackNavigator = () => {
@@ -23,7 +25,7 @@ const StackNavigator = () => {
     <>
       <Stack.Navigator
         initialRouteFName="index"
-        screenOptions={{headerShown: false}}>
+        screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" component={Index} />
         <Stack.Screen name="recipientList" component={RecipientList} />
         <Stack.Screen name="dashboard" component={Dashboard} />
@@ -33,8 +35,10 @@ const StackNavigator = () => {
         <Stack.Screen name="profile" component={Profile} />
         <Stack.Screen name="addEditRecipients" component={AddEditRecipients} />
         <Stack.Screen name="signup" component={Signup} />
+        <Stack.Screen name="personalInformation" component={PersonalInformation} />
         <Stack.Screen name="login" component={Login} />
         <Stack.Screen name="paymentInfo" component={PaymentInfo} />
+        <Stack.Screen name="help" component={Help} />
         <Stack.Screen name="contacts" component={MyContacts} />
         <Stack.Screen name="forgotPassword" component={ForgotPassword} />
         <Stack.Screen name="transections" component={TransectionList} />

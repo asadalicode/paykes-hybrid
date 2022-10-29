@@ -5,7 +5,7 @@ import CustomText from '../components/customText';
 
 export function showToastMessage(type, position, text2, visibilityTime, topOffset, bottomOffset, text1) {
 
-  if (Platform === "android") {
+  if (Platform.OS === "android") {
     SweetAlert.showAlertWithOptions({
       title: text1,
       subTitle: text2,
