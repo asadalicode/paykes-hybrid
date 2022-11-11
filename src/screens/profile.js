@@ -5,8 +5,11 @@ import RedirectTab from '../shared/components/redirectTab';
 import CustomText from '../shared/components/customText';
 import CustomButton from '../shared/components/customButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from 'react';
+import { Context } from '../../appContext';
 
 const Profile = ({ navigation }) => {
+  const context = useContext(Context);
   const handlePersonalInformation = () => {
     navigation.navigate('personalInformation', {
       isEdit: true,
@@ -14,6 +17,7 @@ const Profile = ({ navigation }) => {
   };
 
   const handleLogout = async () => {
+    context.setIsLogin(false);
     await AsyncStorage.clear();
     navigation.push('index');
   };

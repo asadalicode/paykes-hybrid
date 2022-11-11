@@ -20,6 +20,8 @@ import Popup from '../shared/components/popup';
 import OTP from '../components/otp/otp';
 import GlobalStyles from '../shared/styles/globalStyles';
 import { Base64 } from 'js-base64';
+import { useContext } from 'react';
+import { Context } from '../../appContext';
 
 const Login = ({ navigation }) => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
@@ -29,6 +31,8 @@ const Login = ({ navigation }) => {
   const [iShowOtpModal, setIsShowOtpModal] = useState(false);
   const [confirm, setConfimation] = useState(null);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  const context = useContext(Context);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -100,12 +104,13 @@ const Login = ({ navigation }) => {
     firestore()
       .collection('Users')
       .where('phoneWithCountryCode', '==', emailOrPhone)
-      .where('password', '==',  encryptPassword(password))
+      .where('password', '==', encryptPassword(password))
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
           let _userData = response._docs[0]._data;
           await AsyncStorage.setItem('userData', JSON.stringify(_userData));
+          context.setIsLogin(true);
           navigation.push('dashboard');
           // sendOtp(emailOrPhone);
         } else {
@@ -135,7 +140,7 @@ const Login = ({ navigation }) => {
     firestore()
       .collection('Users')
       .where('phoneNumber', '==', emailOrPhone)
-      .where('password', '==',  encryptPassword(password))
+      .where('password', '==', encryptPassword(password))
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
@@ -145,6 +150,7 @@ const Login = ({ navigation }) => {
             .signInWithEmailAndPassword(_userData.email, _userData.password)
             .then(userCredential => {
               setIsLoading(false);
+              context.setIsLogin(true);
               navigation.push('dashboard');
             })
             .catch(error => {
@@ -177,6 +183,7 @@ const Login = ({ navigation }) => {
         // Signed in
         // const user = userCredential.user;
         // ...
+        context.setIsLogin(true);
         navigation.push('dashboard');
       })
       .catch(error => {
@@ -198,7 +205,7 @@ const Login = ({ navigation }) => {
       .get()
       .then(async response => {
         if (response._docs.length > 0) {
-          console.log("data",response._docs[0]);
+          console.log("data", response._docs[0]);
           let _userData = response._docs[0]._data;
           await AsyncStorage.setItem('userData', JSON.stringify(_userData));
           // await firebaseSignin(_userData.email, _userData.password);ssss
@@ -206,6 +213,7 @@ const Login = ({ navigation }) => {
             .signInWithEmailAndPassword(_userData.email, _userData.password)
             .then(userCredential => {
               setIsLoading(false);
+              context.setIsLogin(true);
               navigation.push('dashboard');
             })
             .catch(error => {
@@ -240,6 +248,7 @@ const Login = ({ navigation }) => {
 
   const closePopup = () => {
     setIsShowOtpModal(false);
+    context.setIsLogin(true);
     navigation.push('dashboard');
   };
   return (

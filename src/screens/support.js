@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Image,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,9 +12,12 @@ import Header from '../shared/components/header';
 import CustomText from '../shared/components/customText';
 import SuppportCard from '../components/supportCard';
 import firestore from '@react-native-firebase/firestore';
+import GlobalStyles from '../shared/styles/globalStyles';
 
 const Suppport = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [firstNoClick, setFirstNoClick] = useState(false);
+  const [secondNoClick, setSecondNoClick] = useState(false);
   const [support, setSupport] = useState([
     // { id: 2, title: 'Text us', image: require('../assets/images/message.png') },
     { id: 3, title: 'Help', image: require('../assets/images/help.png') },
@@ -52,9 +56,18 @@ const Suppport = ({ navigation }) => {
     navigation.navigate('dashboard');
   };
   const handleClick = (id) => {
-    if (id === 3) {
-      navigation.navigate("help");
+    switch (id) {
+      case 3:
+        navigation.navigate("help");
+        break;
+      case 4:
+        Linking.openURL("https://www.paykes.org/privacy-policy");
+        break;
+      case 5:
+        Linking.openURL("https://www.paykes.org/terms-of-service");
+        break;
     }
+
   }
   return (
     <View>
@@ -74,14 +87,26 @@ const Suppport = ({ navigation }) => {
               <CustomText style={styles.text}>Call us 24/7</CustomText>
             </View>
             <View style={{ marginTop: 5, marginLeft: 20 }}>
-              <View style={{ flexDirection: 'row' }}>
-                <CustomText>Jimmy - </CustomText>
-                <CustomText>9526870695</CustomText>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                <CustomText>Felix - </CustomText>
-                <CustomText>2183988039</CustomText>
-              </View>
+              <Pressable onPress={() => {
+                setFirstNoClick(true)
+                Linking.openURL(`tel: 9526870695`)
+              }}>
+                <View style={{ flexDirection: 'row', marginBottom: 10, alignItems: 'center', marginTop: 3 }}>
+                  <CustomText>Jimmy - </CustomText>
+                  <CustomText style={{ color: firstNoClick ? GlobalStyles.priColor : GlobalStyles.textColor.color }}>
+                    9526870695
+                  </CustomText>
+                </View>
+              </Pressable>
+              <Pressable onPress={() => {
+                setSecondNoClick(true)
+                Linking.openURL(`tel: 2183988039`)
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CustomText>Felix - </CustomText>
+                  <CustomText style={{ color: secondNoClick ? GlobalStyles.priColor : GlobalStyles.textColor.color }}>2183988039</CustomText>
+                </View>
+              </Pressable>
             </View>
           </View>
           {support.map(item => {
@@ -168,7 +193,8 @@ const styles = StyleSheet.create({
 
   },
   text: {
+    fontSize: 15,
+    marginLeft: 10,
     fontWeight: 'bold',
-    marginLeft: 10
   },
 });

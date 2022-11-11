@@ -17,7 +17,7 @@ const SuppportCard = ({ item, handleClick }) => {
           />
           <CustomText style={styles.text}>{item.title}</CustomText>
         </View>
-      
+
       </View>
     </Pressable>
   );
@@ -34,7 +34,8 @@ const styles = StyleSheet.create({
 
   },
   text: {
+    fontSize: 15,
+    marginLeft: 10,
     fontWeight: 'bold',
-    marginLeft: 10
   },
 });

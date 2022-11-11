@@ -171,7 +171,8 @@ const Help = ({ navigation }) => {
                 <DropDownPicker
                     style={[styles.dropdown, { borderColor: isTopicInvalid ? 'red' : GlobalStyles.inputBorder }]}
                     open={open}
-                    containerStyle={[{ zIndex: 999 }]}
+                    textStyle={GlobalStyles.textColor}
+                    containerStyle={[{ zIndex: 999 ,color:'red' }]}
                     value={value}
                     items={topics}
                     setOpen={setOpen}
@@ -180,11 +181,12 @@ const Help = ({ navigation }) => {
                 />
                 <CustomText style={styles.label}>Sub topic</CustomText>
                 <DropDownPicker
-                    style={[styles.dropdown, , { borderColor: isSubTopicInvalid ? 'red' : GlobalStyles.inputBorder }]}
+                    style={[styles.dropdown , { borderColor: isSubTopicInvalid ? 'red' : GlobalStyles.inputBorder }]}
                     open={subTopicsOpen}
                     containerStyle={[{ zIndex: 99 }]}
                     value={subTopicValue}
                     items={subTopics}
+                    textStyle={GlobalStyles.textColor}
                     setOpen={setSubTopicsOpen}
                     setValue={setSubTopicValue}
                     setItems={setSubTopics}
@@ -223,11 +225,9 @@ const styles = StyleSheet.create({
     },
     label: {
         marginTop: 10,
-        color: 'black',
         marginBottom: 3
     },
     label1: {
-        color: 'black',
         marginBottom: 3
     }
 })

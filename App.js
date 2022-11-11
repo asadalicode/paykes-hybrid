@@ -1,22 +1,28 @@
-import React, { useEffect } from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import React, { createContext, useState } from 'react';
+import { StyleSheet, SafeAreaView } from 'react-native';
 
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import StackNavigator from './src/shared/navigation/stackNavigation';
 import 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import { Context } from './appContext';
 
 
-import CustomButton from './src/shared/components/customButton';
-const App = () => {  
+const App = () => {
+  const [isLogin, setIsLogin] = useState(false);
+
 
   return (
     <>
-      <SafeAreaView style={{flex: 1}}>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
-      </SafeAreaView>
+      <Context.Provider
+        value={{ isLogin ,setIsLogin}}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </SafeAreaView>
+      </Context.Provider>
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </>
   );

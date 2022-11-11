@@ -18,30 +18,44 @@ import PaymentInfo from '../../screens/paymentInfo';
 import TransectionList from '../../screens/transectionList';
 import PersonalInformation from '../../screens/personInformation';
 import Help from '../../screens/help';
+import { useContext } from 'react';
+import { Context } from '../../../appContext';
 
 const Stack = createStackNavigator();
 const StackNavigator = () => {
+
+  const context = useContext(Context);
+  console.log("context", context);
+
+
   return (
     <>
       <Stack.Navigator
         initialRouteFName="index"
         screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" component={Index} />
-        <Stack.Screen name="recipientList" component={RecipientList} />
-        <Stack.Screen name="dashboard" component={Dashboard} />
-        <Stack.Screen name="support" component={Suppport} />
-        <Stack.Screen name="faq" component={Faq} />
-        <Stack.Screen name="inviteFriend" component={InviteFriend} />
-        <Stack.Screen name="profile" component={Profile} />
-        <Stack.Screen name="addEditRecipients" component={AddEditRecipients} />
-        <Stack.Screen name="signup" component={Signup} />
-        <Stack.Screen name="personalInformation" component={PersonalInformation} />
-        <Stack.Screen name="login" component={Login} />
-        <Stack.Screen name="paymentInfo" component={PaymentInfo} />
-        <Stack.Screen name="help" component={Help} />
-        <Stack.Screen name="contacts" component={MyContacts} />
-        <Stack.Screen name="forgotPassword" component={ForgotPassword} />
-        <Stack.Screen name="transections" component={TransectionList} />
+        {
+          !context.isLogin ?
+            <>
+              <Stack.Screen name="index" component={Index} />
+              <Stack.Screen name="signup" component={Signup} />
+              <Stack.Screen name="login" component={Login} />
+            </> :
+            <>
+              <Stack.Screen name="dashboard" component={Dashboard} />
+              <Stack.Screen name="recipientList" component={RecipientList} />
+              <Stack.Screen name="support" component={Suppport} />
+              <Stack.Screen name="faq" component={Faq} />
+              <Stack.Screen name="inviteFriend" component={InviteFriend} />
+              <Stack.Screen name="profile" component={Profile} />
+              <Stack.Screen name="addEditRecipients" component={AddEditRecipients} />
+              <Stack.Screen name="personalInformation" component={PersonalInformation} />
+              <Stack.Screen name="paymentInfo" component={PaymentInfo} />
+              <Stack.Screen name="help" component={Help} />
+              <Stack.Screen name="contacts" component={MyContacts} />
+              <Stack.Screen name="forgotPassword" component={ForgotPassword} />
+              <Stack.Screen name="transections" component={TransectionList} />
+            </>
+        }
       </Stack.Navigator>
     </>
   );
