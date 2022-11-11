@@ -1,37 +1,37 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Base64 } from "js-base64";
 import React, { useState } from "react";
-import {  Modal, StyleSheet, Pressable, View } from "react-native";
+import { Modal, StyleSheet, Pressable, View, Image } from "react-native";
 import CustomButton from "../shared/components/customButton";
 import CustomText from "../shared/components/customText";
 import TextInputField from "../shared/components/textInputField";
 import { showToastMessage } from "../shared/js/showToastMessage";
 import GlobalStyles from "../shared/styles/globalStyles";
 
-const PaymentConfirmModal = ({ isShowPaymentConfirmModal, hideModal, navigation, isLoading,handleConfirm }) => {
+const PaymentConfirmModal = ({ isShowPaymentConfirmModal, setIsShowPaymentMethod, navigation, isLoading, handleConfirm }) => {
 
 
-    const [password , setPassword] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleFogotPassword = () => {
         navigation.push('forgotPassword');
     };
     const encryptPassword = (password) => {
         return Base64.encode(password);
-      }
-    const handleConfirmPayment =async()=>{
+    }
+    const handleConfirmPayment = async () => {
         let _userData = await AsyncStorage.getItem('userData');
         _userData = JSON.parse(_userData);
-        if(_userData.password !== encryptPassword(password)){
+        if (_userData.password !== encryptPassword(password)) {
             showToastMessage(
                 'error',
                 'top',
                 `Invalid password`,
                 3000,
                 60,
-              );
-              return ;
-        }else{
+            );
+            return;
+        } else {
             handleConfirm();
         }
     }
@@ -39,16 +39,26 @@ const PaymentConfirmModal = ({ isShowPaymentConfirmModal, hideModal, navigation,
 
     return (
         <View style={styles.centeredView}>
+
             <Modal
                 animationType="fade"
                 transparent={true}
                 visible={isShowPaymentConfirmModal}
-                onRequestClose={() => {
-                    hideModal(false);
-                }}
+                onRequestClose={() =>
+                    setIsShowPaymentMethod(false)
+                }
             >
                 <View style={styles.centeredView}>
+
                     <View style={styles.modalView}>
+                        <View style={{position:'absolute',right:20,top:20}}>
+                            <Pressable onPress={() => setIsShowPaymentMethod(false)}>
+                                <Image
+                                    source={require('../assets/images/cross.png')}
+                                    style={{ height: 15, width: 15 }}
+                                />
+                            </Pressable>
+                        </View>
                         <CustomText style={styles.title}>
                             Enter your password
                         </CustomText>
@@ -60,7 +70,7 @@ const PaymentConfirmModal = ({ isShowPaymentConfirmModal, hideModal, navigation,
                             style={{ width: '95%', marginTop: 15 }}
                             Label={"Enter password"}
                             SecureTextEntry={true}
-                            OnChangeText={(value)=>{
+                            OnChangeText={(value) => {
                                 setPassword(value);
                             }}
                         />
@@ -80,7 +90,8 @@ const PaymentConfirmModal = ({ isShowPaymentConfirmModal, hideModal, navigation,
                     </View>
                 </View>
             </Modal>
-        </View>
+
+        </View >
     );
 }
 export default PaymentConfirmModal;
@@ -101,6 +112,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 25,
         width: '90%',
+        position:'relative',
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {

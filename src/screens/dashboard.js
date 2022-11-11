@@ -54,7 +54,7 @@ const Dashboard = ({ navigation, route }) => {
   const [cardDetails, setCardDetails] = useState({});
   const [totalTodayTransaction, setTotalTodayTransaction] = useState(0);
   const [isShowExceededPerTransaction, setIsShowExceededPerTransaction] = useState(false);
-  const [isShowPaymentConfirmModal, setIsShowPaymentConfirmModal] = useState(false)
+  const [isShowPaymentMethod, setIsShowPaymentMethod] = useState(false);
   const refRBSheet = useRef();
   const [addressAdded, setAddressAdded] = useState(false)
 
@@ -171,7 +171,6 @@ const Dashboard = ({ navigation, route }) => {
       });
       return;
     }
-    handlePaymentSend();
     refRBSheet.current.open();
   };
 
@@ -186,13 +185,13 @@ const Dashboard = ({ navigation, route }) => {
       phoneNumber: _phoneNumber
     };
     let _response = await mPaisaAPICall(_data);
-   setIsLoading(false);
+    setIsLoading(false);
     if (_response.isSuccess) {
-      setIsShowPaymentConfirmModal(false);
+      setIsShowPaymentMethod(false);
       closeBottomSheet();
       showToastMessage('success', 'top', `Payment send successfully`, 3000, 60);
-      setAmount(0);
-      setkesInputAmount(0);
+      setAmount('');
+      setkesInputAmount('');
       getTransection();
     }
   };
@@ -360,11 +359,14 @@ const Dashboard = ({ navigation, route }) => {
     }
   }
 
+  const confirmPaymentModal = () => {
+    closeBottomSheet();
+    setIsShowPaymentMethod(true);
+  }
   return (
     <>
 
       <View>
-
         <View style={[GlobalStyles.bgPrimary, styles.header]}>
           <CustomIconButton
             Icon={() => (
@@ -581,24 +583,21 @@ const Dashboard = ({ navigation, route }) => {
               </View>
             </View>
           </View>
+
         </ScrollView>
+
         <BottomSheet refRBSheet={refRBSheet} height={600}>
           <PaymentDetails
             recipient={recipient}
             totalSent={amount}
+            navigation={navigation}
             kshValue={KESAmount.toFixed(2)}
             kesAmount={kesInputAmount}
             cardDetails={cardDetails}
-            handleConfirmPayment={setIsShowPaymentConfirmModal}
+            handleConfirmPayment={handlePaymentSend}
+            isLoading={isLoading}
           />
         </BottomSheet>
-        <PaymentConfirmModal
-          navigation={navigation}
-          isShowPaymentConfirmModal={isShowPaymentConfirmModal}
-          hideModal={setIsShowPaymentConfirmModal}
-          handleConfirm={handlePaymentSend}
-          isLoading={isLoading}
-        />
       </View>
       {
         (registerCardLoader || amountLoader) &&

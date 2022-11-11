@@ -15,7 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 const Suppport = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [support, setSupport] = useState([
-    { id: 2, title: 'Text us', image: require('../assets/images/message.png') },
+    // { id: 2, title: 'Text us', image: require('../assets/images/message.png') },
     { id: 3, title: 'Help', image: require('../assets/images/help.png') },
     { id: 4, title: 'View Privacy Policy', image: require('../assets/images/lock.png') },
     { id: 5, title: 'View Terms of Service', image: require('../assets/images/accept.png') },

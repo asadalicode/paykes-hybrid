@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet } from 'react-native';
 import FastImage from "react-native-fast-image";
 import { Divider } from "react-native-paper";
 import CustomButton from "../shared/components/customButton";
 import CustomText from "../shared/components/customText";
 import GlobalStyles from "../shared/styles/globalStyles";
+import PaymentConfirmModal from "./paymentConfirmModal";
 
-const PaymentDetails = ({recipient,totalSent,kshValue,kesAmount,cardDetails,handleConfirmPayment}) => {
+const PaymentDetails = ({ recipient, totalSent, kshValue, kesAmount, cardDetails, handleConfirmPayment, navigation ,isLoading}) => {
+    const [isShowPaymentMethod , setIsShowPaymentMethod]= useState(false);
+    
     return (
         <View style={{ padding: 15 }}>
             <View style={styles.card}>
@@ -88,7 +91,15 @@ const PaymentDetails = ({recipient,totalSent,kshValue,kesAmount,cardDetails,hand
             <CustomButton
                 Title={"Confirm transfer"}
                 style={GlobalStyles.mt2}
-                onPress={()=>handleConfirmPayment(true)}
+                onPress={()=>setIsShowPaymentMethod(true)}
+            />
+
+            <PaymentConfirmModal
+                navigation={navigation}
+                isShowPaymentConfirmModal={isShowPaymentMethod}
+                setIsShowPaymentMethod={setIsShowPaymentMethod}
+                handleConfirm={handleConfirmPayment}
+                isLoading={isLoading}
             />
         </View>
     )
