@@ -39,6 +39,7 @@ const StackNavigator = () => {
               <Stack.Screen name="index" component={Index} />
               <Stack.Screen name="signup" component={Signup} />
               <Stack.Screen name="login" component={Login} />
+              <Stack.Screen name="forgotPassword" component={ForgotPassword} />
             </> :
             <>
               <Stack.Screen name="dashboard" component={Dashboard} />
@@ -52,7 +53,6 @@ const StackNavigator = () => {
               <Stack.Screen name="paymentInfo" component={PaymentInfo} />
               <Stack.Screen name="help" component={Help} />
               <Stack.Screen name="contacts" component={MyContacts} />
-              <Stack.Screen name="forgotPassword" component={ForgotPassword} />
               <Stack.Screen name="transections" component={TransectionList} />
             </>
         }
