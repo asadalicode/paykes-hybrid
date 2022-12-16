@@ -27,10 +27,25 @@ import BottomSheet from '../shared/components/bottomSheet';
 import PaymentDetails from '../components/paymentDetails';
 import PaymentConfirmModal from '../components/paymentConfirmModal';
 import OverlayLoader from '../components/overlayLoader';
+import { RefreshControl } from 'react-native';
+
+const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 const Dashboard = ({ navigation, route }) => {
+
   const [transecionHistory, setTransectionHistory] = useState([
   ]);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    getTransection();
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
   const [transectionListLoading, setTrasectionListLoading] = useState(false);
   const [isShowTransectionListFull, setIsShowTransectionListFull] = useState(false);
   const [recipientId, setRecipientId] = useState(null);
@@ -58,8 +73,9 @@ const Dashboard = ({ navigation, route }) => {
   const [isShowPaymentMethod, setIsShowPaymentMethod] = useState(false);
   const refRBSheet = useRef();
   const [addressAdded, setAddressAdded] = useState(false)
-
+  const [deductValue, setDeductValue] = useState(0.99)
   useEffect(() => {
+    getDeductAmount();
     getRecipients();
     currencyConverter(1);
     getRegisterCard();
@@ -285,12 +301,30 @@ const Dashboard = ({ navigation, route }) => {
   const currencyConverter = async usd => {
     setAmountLoader(true);
     let _result = await currencyConverterAPICall(usd);
-    console.log("result11", _result);
     setAmountLoader(false);
     if (_result.isSuccess) {
-      setKESAmount(_result.resultAmount - 0.99);
+      setKESAmount(_result.resultAmount - deductValue);
     }
   };
+
+  const getDeductAmount = () => {
+    setIsLoading(true);
+    firestore()
+      .collection('deduct_amount')
+      .get()
+      .then(response => {
+        setIsLoading(false);
+        let _amount = response._docs;
+        if (_amount.length) {
+          setDeductValue(_amount[0]._data.amount)
+        }
+
+      })
+      .catch(error => {
+        setIsLoading(false);
+        showToastMessage('error', 'top', `${error}`, 3000, 60);
+      });
+  }
 
 
   const closeBottomSheet = () => {
@@ -354,10 +388,10 @@ const Dashboard = ({ navigation, route }) => {
 
       }
       if (value > 150000) {
-        setIsShowKShExceededError(true);
+        setIsShowKExceededError(true);
       }
       else {
-        setIsShowKShExceededError(false);
+        setIsShowKExceededError(false);
       }
       setAmount((value / parseFloat(KESAmount)).toFixed(2));
     }
@@ -504,7 +538,13 @@ const Dashboard = ({ navigation, route }) => {
           </View>
 
         </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 500 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 500 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }>
           <View>
             <View style={[styles.transectionContainer, GlobalStyles.mt3]}>
               <View style={[styles.mContainer]}>
@@ -608,7 +648,7 @@ const Dashboard = ({ navigation, route }) => {
         </BottomSheet>
       </View>
       {
-        (registerCardLoader || amountLoader) &&
+       (registerCardLoader || amountLoader) &&
         <OverlayLoader />
       }
     </>
