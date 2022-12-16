@@ -1,5 +1,5 @@
 import Contacts from 'react-native-contacts';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   PermissionsAndroid,
@@ -12,13 +12,13 @@ import {
 import Header from '../shared/components/header';
 import TextInputField from '../shared/components/textInputField';
 import CustomText from '../shared/components/customText';
-import { ActivityIndicator, Divider } from 'react-native-paper';
+import {ActivityIndicator, Divider} from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
-import { showToastMessage } from '../shared/js/showToastMessage';
+import {showToastMessage} from '../shared/js/showToastMessage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 let recipients = [];
 
-const MyContacts = ({ navigation }) => {
+const MyContacts = ({navigation}) => {
   const [contacts, setContacts] = useState([]);
   const [filtercontacts, setFiltercontacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,7 @@ const MyContacts = ({ navigation }) => {
 
         let _recipientsData = response._docs;
         if (_recipientsData.length > 0) {
-          let _recipients = _recipientsData.map(({ _data }) => {
+          let _recipients = _recipientsData.map(({_data}) => {
             return _data;
           });
 
@@ -78,7 +78,6 @@ const MyContacts = ({ navigation }) => {
     Contacts.getAll()
       .then(contacts => {
         setIsLoading(false);
-        console.log("conttacts",contacts);
         let _contacts = contacts.map(contact => {
           return {
             fullName: contact.displayName,
@@ -135,7 +134,7 @@ const MyContacts = ({ navigation }) => {
         <View style={[styles.searchContainer]}>
           <Image
             source={require('../assets/images/search.png')}
-            style={[styles.iconStyle, { position: 'relative', top: 5 }]}
+            style={[styles.iconStyle, {position: 'relative', top: 5}]}
           />
           <TextInputField
             placeholder={'Enter name to search'}
@@ -148,8 +147,8 @@ const MyContacts = ({ navigation }) => {
         {isLoading && <ActivityIndicator color="black" />}
         <ScrollView>
           <View style={[styles.container]}>
-            {filtercontacts.map((contact, index) => {
-              return <ContactCard contact={contact} navigation={navigation} key={index} />;
+            {filtercontacts.map(contact => {
+              return <ContactCard contact={contact} navigation={navigation} />;
             })}
           </View>
         </ScrollView>
@@ -159,7 +158,7 @@ const MyContacts = ({ navigation }) => {
 };
 export default MyContacts;
 
-const ContactCard = ({ contact, navigation }) => {
+const ContactCard = ({contact, navigation}) => {
   const handleContact = () => {
     navigation.push('addEditRecipients', {
       isDefaultValue: true,
@@ -172,7 +171,7 @@ const ContactCard = ({ contact, navigation }) => {
       <Pressable onPress={handleContact}>
         <>
           <View style={styles.contactCard}>
-            <CustomText style={{ fontWeight: '700', fontSize: 18 }}>
+            <CustomText style={{fontWeight: '700', fontSize: 18}}>
               {contact.fullName}
             </CustomText>
             <CustomText>{contact.phoneNumber}</CustomText>

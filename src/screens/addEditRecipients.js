@@ -59,14 +59,14 @@ const AddEditRecipients = ({navigation, route}) => {
       width:35,
       id: PaymentMethodEnum.mPaisa,
     },
-    {
-      name: 'Bank transfer',
-      image: require('../assets/images/bank.png'),
-      isSelected: false,
-      height:15,
-      width:15,
-      id: PaymentMethodEnum.bank,
-    },
+    // {
+    //   name: 'Bank transfer',
+    //   image: require('../assets/images/bank.png'),
+    //   isSelected: false,
+    //   height:15,
+    //   width:15,
+    //   id: PaymentMethodEnum.bank,
+    // },
   ]);
   const phoneUtil = PhoneNumberUtil.getInstance();
   const [bankList, setBankList] = useState([

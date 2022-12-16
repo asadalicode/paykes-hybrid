@@ -50,7 +50,8 @@ const Dashboard = ({ navigation, route }) => {
   const [recieveError, setRecieveError] = useState(false);
   const [registerCardLoader, setRegisterCardLoader] = useState(true);
   const [amountLoader, setAmountLoader] = useState(true);
-  const [isShowKExceededError, setIsShowKShExceededError] = useState(false);
+  const [isShowKExceededError, setIsShowKExceededError] = useState(false);
+  const [isShowMinAmountError, setIiShowMinAmountError] = useState(false);
   const [cardDetails, setCardDetails] = useState({});
   const [totalTodayTransaction, setTotalTodayTransaction] = useState(0);
   const [isShowExceededPerTransaction, setIsShowExceededPerTransaction] = useState(false);
@@ -76,7 +77,6 @@ const Dashboard = ({ navigation, route }) => {
     let _userData = await AsyncStorage.getItem('userData');
     _userData = JSON.parse(_userData);
     let _response = await getCustomerProfileAPICall(_userData.email);
-    console.log("profile", _response);
     if (_response?.data?.address?.addressLine1) {
       setAddressAdded(true);
     } else {
@@ -99,7 +99,6 @@ const Dashboard = ({ navigation, route }) => {
     setTrasectionListLoading(true);
     let _userData = await AsyncStorage.getItem('userData');
     _userData = JSON.parse(_userData);
-    console.log("transaction here", _userData.id);
     let _response = await getTansectionAPICall(_userData.id);
     setTrasectionListLoading(false);
     if (_response.isSuccess) {
@@ -316,10 +315,15 @@ const Dashboard = ({ navigation, route }) => {
       setAmount(value);
       setkesInputAmount((value * parseFloat(KESAmount)).toFixed(2));
       if ((value * parseFloat(KESAmount)).toFixed(2) > 150000) {
-        setIsShowKShExceededError(true);
+        setIsShowKExceededError(true);
       }
       else {
-        setIsShowKShExceededError(false);
+        setIsShowKExceededError(false);
+      }
+      if ((value * parseFloat(KESAmount)).toFixed(2) < 100) {
+        setIiShowMinAmountError(true);
+      } else {
+        setIiShowMinAmountError(false);
       }
       let _values = (value * parseFloat(KESAmount)).toFixed(2) + totalTodayTransaction;
       if (_values > 300000) {
@@ -480,11 +484,15 @@ const Dashboard = ({ navigation, route }) => {
                   <CustomText style={[styles.exchangeRate, { color: 'red' }]}>
                     Can't send more then  300,000Ksh in one day
                   </CustomText>
-                  :
-                  <CustomText style={[styles.exchangeRate]}>
-                    Exchange Rate 1 USD = {parseFloat(KESAmount).toFixed(2)} Ksh with no
-                    fees
-                  </CustomText>
+                  : isShowMinAmountError ?
+                    <CustomText style={[styles.exchangeRate, { color: 'red' }]}>
+                      Can't send less then 1000Ksh
+                    </CustomText>
+                    :
+                    <CustomText style={[styles.exchangeRate]}>
+                      Exchange Rate 1 USD = {parseFloat(KESAmount).toFixed(2)} Ksh with no
+                      fees
+                    </CustomText>
             }
 
             <CustomButton
@@ -531,10 +539,10 @@ const Dashboard = ({ navigation, route }) => {
                             source={require('../assets/images/m-pesa.png')}
                             style={styles.mPesa}
                           />
-                          <Image
+                          {/* <Image
                             source={require('../assets/images/bank.png')}
                             style={styles.bank}
-                          />
+                          /> */}
                         </View>
                       </View>
                     </View>
