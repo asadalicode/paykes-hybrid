@@ -216,7 +216,7 @@ const Signup = ({ navigation, route }) => {
       id: isEdit ? userId : uuid.v4(),
       firstName: firstName,
       familyName:lastName,
-      givenName:lastName,
+      givenName:firstName,
       email: email,
       password: encryptPassword(password),
       phoneNumber: phoneNumber,
