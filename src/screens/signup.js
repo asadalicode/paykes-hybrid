@@ -297,7 +297,7 @@ const Signup = ({ navigation, route }) => {
   const createCustomerProfile = async (user) => {
     let _data = {
       userId: user.id,
-      givenName: user.fullName,
+      givenName:`${user.firstName} ${user.familyName}`,
       emailAddress: user.email,
       phoneNumber: user.phoneWithCountryCode,
       note: 'PayKES customer',
@@ -350,7 +350,7 @@ const Signup = ({ navigation, route }) => {
     auth()
       .createUserWithEmailAndPassword(user.email, user.password)
       .then(async (userCredential) => {
-        debugger;
+        console.log("userr",user);
         await createCustomerProfile(user);
         showToastMessage(
           'success',
@@ -364,7 +364,6 @@ const Signup = ({ navigation, route }) => {
         // resetState();
       })
       .catch(error => {
-        debugger;
         showToastMessage('error', 'top', error, 3000, 60);
         // ..
       });
