@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     flexDirection: 'row',
     height: 60,
+    zIndex:999,
     alignItems: 'center',
   },
   leftIcon: {
