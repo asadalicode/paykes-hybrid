@@ -27,7 +27,7 @@ const Profile = ({ navigation }) => {
       <Header
         title={'Profile'}
         hasBack
-        onPress={() => navigation.navigate('dashboard')}
+        onPress={() => navigation.push('dashboard')}
       />
       <View style={styles.container}>
         <View style={{ display: 'flex', flex: 1 }}>

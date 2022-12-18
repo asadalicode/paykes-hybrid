@@ -90,7 +90,7 @@ const RecipientList = ({navigation}) => {
       <Header
         title={'Recipients'}
         hasBack
-        onPress={() => navigation.navigate('dashboard')}
+        onPress={() => navigation.push('dashboard')}
       />
       <View>
         <View>

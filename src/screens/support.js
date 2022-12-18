@@ -53,7 +53,7 @@ const Suppport = ({ navigation }) => {
       });
   };
   const handleNavigation = () => {
-    navigation.navigate('dashboard');
+    navigation.push('dashboard');
   };
   const handleClick = (id) => {
     switch (id) {
